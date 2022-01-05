@@ -1,23 +1,24 @@
 """
 usage:
-    python3 parse_slow.py [file_name]
+    python3 analyze1.py [file_name]
 """
 
 import sys
 from collections import defaultdict
 
+# Get filename from argv
 file_name = sys.argv[1]
 
+# Necessary constants
 METRICS_START = 5
 METRICS_COUNT = 6
 METRICS_END = METRICS_START + METRICS_COUNT
-
 MICROBLOCK_HASH_COL = 4
 
 content = open(file_name, 'r')
 lines = content.readlines()
 
-rows = []
+# Create a map from 1) block_hash to 2) rows for that block_hash
 key_to_rows = defaultdict(list)
 for line in lines:
     parts = line.split('\t')
@@ -26,12 +27,13 @@ for line in lines:
     try:
         for i in range(METRICS_START, METRICS_END):
             parts[i] = int(parts[i])
-        rows.append(parts)
         key_to_rows[parts[0]].append(parts)
-        # print (rows[-1])
     except Exception as e:
+        # If we have a problem, crash.
         print('problem', e, line)
+        sys.exit(1)
 
+# Define the limits based on the Rust code definitions
 """
 pub const BLOCK_LIMIT_MAINNET_205: ExecutionCost = ExecutionCost {
     read_count: 15_000,
@@ -43,6 +45,7 @@ pub const BLOCK_LIMIT_MAINNET_205: ExecutionCost = ExecutionCost {
 """
 limits = [15000, 100000000, 5000000000, 15000, 15000000, 2 * 1024 * 1024]
 
+# For each pair of (block_hash, rows), summarize the row, and output a csv.
 for idx, rows in key_to_rows.items():
     metrics = [0, 0, 0, 0, 0, 0]
     num_microblock_txs = 0
@@ -54,7 +57,6 @@ for idx, rows in key_to_rows.items():
             j = METRICS_START + i
             metrics[i] += row[j]
 
-    # print(idx, metrics, count)
     fraction_metrics = []
     for i in range(0,6):
         fraction_metrics.append(1.0 * metrics[i] / limits[i])
