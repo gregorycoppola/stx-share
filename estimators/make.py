@@ -47,7 +47,7 @@ def extract_list(condition, heading, display):
     return [y, x]
 
 levels = ['high', 'middle', 'low']
-displays = ['original', 'log']
+displays = ['original', 'log', 'cutoff']
 for  level in levels:
     for display in displays:
         median = extract_list('median', 'new_estimate_' + level, display)
@@ -58,5 +58,6 @@ for  level in levels:
         f, ax = plt.subplots(1, 1)
         plt.plot(median[1], median[0])
         plt.plot(old[1], old[0])
-        ax.set_ylim(0.0, 10.0)
+        if display == 'cutoff':
+            ax.set_ylim(0.0, 20.0)
         plt.savefig(level + '_' + str(display) + '.svg')
