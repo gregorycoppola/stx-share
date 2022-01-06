@@ -2,6 +2,8 @@ import sys
 import math
 import matplotlib.pyplot as plt
 
+START_BLOCK_HEIGHT = 39000
+
 median_file = sys.argv[1]
 old_file = sys.argv[2]
 
@@ -18,7 +20,7 @@ def get_kv_list(file_name):
             kv[inner_parts[0]] = float(inner_parts[1])
         
         block_height = int(kv['block_height'])
-        if block_height != last_block_height:
+        if block_height != last_block_height and block_height >= START_BLOCK_HEIGHT:
             kv_list.append(kv)
             idx_list.append(block_height)
         last_block_height = block_height
@@ -52,12 +54,13 @@ old_high_log1 = extract_list('old', 'new_estimate_high', True)
 old_middle_log1 = extract_list('old', 'new_estimate_middle', True)
 old_low_log1 = extract_list('old', 'new_estimate_low', True)
 
+levels = ['high', 'middle', 'low']
+use_logs = [False, True]
+for  level in levels:
+    for use_log in use_logs:
+        median = extract_list('median', 'new_estimate_' + level, use_log)
+        old = extract_list('old', 'new_estimate_' + level, use_log)
 
-if False:
-    plt.plot(median_middle_log0)
-    plt.plot(old_middle_log0)
-    plt.savefig('middle_log0.svg')
-
-plt.plot(median_middle_log1[1], median_middle_log1[0])
-plt.plot(old_middle_log1[1], old_middle_log1[0])
-plt.savefig('special2.svg')
+        plt.plot(median[1], median[0])
+        plt.plot(old[1], old[0])
+        plt.savefig(level + '_' + str(use_log) + '.svg')
