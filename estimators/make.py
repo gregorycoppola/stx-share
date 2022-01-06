@@ -56,8 +56,8 @@ for  level in levels:
         plt.figure(figsize=(20, 10))
         plt.clf()
         f, ax = plt.subplots(1, 1)
-        plt.plot(median[1], median[0])
         plt.plot(old[1], old[0])
+        plt.plot(median[1], median[0])
         if display == 'cutoff':
             ax.set_ylim(0.0, 20.0)
         plt.savefig(level + '_' + str(display) + '.svg')
