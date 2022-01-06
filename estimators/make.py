@@ -62,6 +62,7 @@ for  level in levels:
         median = extract_list('median', 'new_estimate_' + level, use_log)
         old = extract_list('old', 'new_estimate_' + level, use_log)
 
+        plt.clf()
         plt.plot(median[1], median[0])
         plt.plot(old[1], old[0])
         plt.savefig(level + '_' + str(use_log) + '.svg')
