@@ -56,7 +56,7 @@ for  level in levels:
         plt.figure(figsize=(20, 10))
         f, ax = plt.subplots(1, 1)
         plt.clf()
-        ax.set_ylim(0.0, 10.0)
         ax.plot(median[1], median[0])
         ax.plot(old[1], old[0])
+        ax.set_ylim(0.0, 10.0)
         plt.savefig(level + '_' + str(display) + '.svg')
