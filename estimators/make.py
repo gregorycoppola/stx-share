@@ -8,6 +8,7 @@ old_file = sys.argv[2]
 def get_kv_list(file_name):
     lines = list(open(file_name, 'r'))
     kv_list = []
+    idx_list = []
     last_block_height = None
     for line in lines:
         parts = line.strip().split(', ')
@@ -19,8 +20,9 @@ def get_kv_list(file_name):
         block_height = int(kv['block_height'])
         if block_height != last_block_height:
             kv_list.append(kv)
+            idx_list.append(block_height)
         last_block_height = block_height
-    return kv_list
+    return [kv_list, idx_list]
 
 condition_to_kv = {
         'median': get_kv_list(median_file),
@@ -28,14 +30,14 @@ condition_to_kv = {
         }
 
 def extract_list(condition, heading, use_log):
-    kv_list = condition_to_kv[condition]
+    [kv_list, idx_list] = condition_to_kv[condition]
     r = []
     for kv in kv_list:
         base = kv[heading]
         # value = math.log(base) if use_log else base
         value = math.log(base)
         r.append(value)
-    return r
+    return [r, idx_list]
 
 median_high_log0 = extract_list('median', 'new_estimate_high', False)
 median_middle_log0 = extract_list('median', 'new_estimate_middle', False)
@@ -52,10 +54,11 @@ old_middle_log1 = extract_list('old', 'new_estimate_middle', True)
 old_low_log1 = extract_list('old', 'new_estimate_low', True)
 
 
-plt.plot(median_middle_log0)
-plt.plot(old_middle_log0)
-plt.savefig('middle_log0.svg')
+if False:
+    plt.plot(median_middle_log0)
+    plt.plot(old_middle_log0)
+    plt.savefig('middle_log0.svg')
 
-plt.plot(median_middle_log1)
-plt.plot(old_middle_log1)
-plt.savefig('special.svg')
+plt.plot(median_middle_log1[0], median_middle_log1[1])
+plt.plot(old_middle_log1[0], old_middle_log1[1])
+plt.savefig('special2.svg')
