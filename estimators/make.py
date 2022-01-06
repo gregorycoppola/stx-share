@@ -59,6 +59,6 @@ if False:
     plt.plot(old_middle_log0)
     plt.savefig('middle_log0.svg')
 
-plt.plot(median_middle_log1[0], median_middle_log1[1])
-plt.plot(old_middle_log1[0], old_middle_log1[1])
+plt.plot(median_middle_log1[1], median_middle_log1[0])
+plt.plot(old_middle_log1[1], old_middle_log1[0])
 plt.savefig('special2.svg')
