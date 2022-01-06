@@ -3,6 +3,7 @@ import math
 import matplotlib.pyplot as plt
 
 START_BLOCK_HEIGHT = 39000
+COST_FACTOR = 317.0 / 1000000
 
 median_file = sys.argv[1]
 old_file = sys.argv[2]
@@ -35,8 +36,8 @@ def extract_list(condition, heading, use_log):
     [kv_list, idx_list] = condition_to_kv[condition]
     r = []
     for kv in kv_list:
-        base = kv[heading]
-        value = math.log(base) if use_log else base
+        base = kv[heading] * COST_FACTOR
+        value = math.log(base, 10.0) if use_log else base
         r.append(value)
     return [r, idx_list]
 
@@ -47,6 +48,7 @@ for  level in levels:
         median = extract_list('median', 'new_estimate_' + level, use_log)
         old = extract_list('old', 'new_estimate_' + level, use_log)
 
+        plt.figure(figsize=(8, 4))
         plt.clf()
         plt.plot(median[1], median[0])
         plt.plot(old[1], old[0])
