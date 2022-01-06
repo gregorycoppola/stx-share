@@ -50,4 +50,4 @@ for  level in levels:
         plt.clf()
         plt.plot(median[1], median[0])
         plt.plot(old[1], old[0])
-        plt.savefig(level + '_' + str(use_log) + '.svg')
+        plt.savefig(level + '_log' + str(use_log) + '.svg')
