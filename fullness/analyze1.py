@@ -51,7 +51,7 @@ for idx, rows in key_to_rows.items():
     num_microblock_txs = 0
     for row in rows:
         microblock_hash = row[MICROBLOCK_HASH_COL]
-        if microblock_hash == '\\\\x':
+        if microblock_hash != '\\\\x':
             num_microblock_txs += 1
         for i in range(0, METRICS_COUNT):
             j = METRICS_START + i
