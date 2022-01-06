@@ -32,7 +32,8 @@ def extract_list(condition, heading, use_log):
     r = []
     for kv in kv_list:
         base = kv[heading]
-        value = math.log(base) if use_log else base
+        # value = math.log(base) if use_log else base
+        value = math.log(base)
         r.append(value)
     return r
 
