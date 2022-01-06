@@ -65,4 +65,5 @@ for  level in levels:
         line2.set_label('new')
         if display == 'cutoff':
             ax.set_ylim(0.0, 10.0)
+        ax.legend()
         plt.savefig(level + '_' + str(display) + '.svg')
