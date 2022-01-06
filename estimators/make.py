@@ -32,24 +32,33 @@ condition_to_kv = {
         'old': get_kv_list(old_file),
         }
 
-def extract_list(condition, heading, use_log):
+def extract_list(condition, heading, display):
     [kv_list, idx_list] = condition_to_kv[condition]
-    r = []
-    for kv in kv_list:
+    y = []
+    x = []
+    for kv, idx in zip(kv_list, idx_list):
         base = kv[heading] * COST_FACTOR
-        value = math.log(base, 10.0) if use_log else base
-        r.append(value)
-    return [r, idx_list]
+        if display == 'natural':
+            y.append(base)
+            x.append(idx)
+        if display == 'log':
+            y.append(math.log(base, 10.0))
+            x.append(idx)
+        if display == 'cutoff':
+            if base < 10.0:
+                y.append(base)
+                x.append(idx)
+    return [y, x]
 
 levels = ['high', 'middle', 'low']
-use_logs = [False, True]
+displays = ['natural', 'log', 'cutoff']
 for  level in levels:
-    for use_log in use_logs:
-        median = extract_list('median', 'new_estimate_' + level, use_log)
-        old = extract_list('old', 'new_estimate_' + level, use_log)
+    for display in displays:
+        median = extract_list('median', 'new_estimate_' + level, display)
+        old = extract_list('old', 'new_estimate_' + level, display)
 
         plt.figure(figsize=(20, 10))
         plt.clf()
         plt.plot(median[1], median[0])
         plt.plot(old[1], old[0])
-        plt.savefig(level + '_log' + str(use_log) + '.svg')
+        plt.savefig(level + '_' + str(display) + '.svg')
