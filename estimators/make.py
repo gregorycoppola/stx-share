@@ -40,20 +40,6 @@ def extract_list(condition, heading, use_log):
         r.append(value)
     return [r, idx_list]
 
-median_high_log0 = extract_list('median', 'new_estimate_high', False)
-median_middle_log0 = extract_list('median', 'new_estimate_middle', False)
-median_low_log0 = extract_list('median', 'new_estimate_low', False)
-old_high_log0 = extract_list('old', 'new_estimate_high', False)
-old_middle_log0 = extract_list('old', 'new_estimate_middle', False)
-old_low_log0 = extract_list('old', 'new_estimate_low', False)
-
-median_high_log1 = extract_list('median', 'new_estimate_high', True)
-median_middle_log1 = extract_list('median', 'new_estimate_middle', True)
-median_low_log1 = extract_list('median', 'new_estimate_low', True)
-old_high_log1 = extract_list('old', 'new_estimate_high', True)
-old_middle_log1 = extract_list('old', 'new_estimate_middle', True)
-old_low_log1 = extract_list('old', 'new_estimate_low', True)
-
 levels = ['high', 'middle', 'low']
 use_logs = [False, True]
 for  level in levels:
