@@ -36,8 +36,7 @@ def extract_list(condition, heading, use_log):
     r = []
     for kv in kv_list:
         base = kv[heading]
-        # value = math.log(base) if use_log else base
-        value = math.log(base)
+        value = math.log(base) if use_log else base
         r.append(value)
     return [r, idx_list]
 
@@ -56,7 +55,7 @@ old_middle_log1 = extract_list('old', 'new_estimate_middle', True)
 old_low_log1 = extract_list('old', 'new_estimate_low', True)
 
 levels = ['high', 'middle', 'low']
-use_logs = [True]
+use_logs = [False, True]
 for  level in levels:
     for use_log in use_logs:
         median = extract_list('median', 'new_estimate_' + level, use_log)
