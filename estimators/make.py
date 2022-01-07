@@ -56,7 +56,7 @@ for  level in levels:
         plt.figure(figsize=(20, 10))
         plt.clf()
         f, ax = plt.subplots(1, 1)
-        plt.title('New vs. Old Fee Estimator')
+        plt.title(level + ', ' + display)
         plt.xlabel('Block Height')
         plt.ylabel('Estimated fee for "stack-stx"')
         line1, = plt.plot(old[1], old[0])
