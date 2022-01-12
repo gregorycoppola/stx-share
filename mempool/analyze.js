@@ -1,9 +1,9 @@
 const axios = require('axios')
 
-function add_to_map(base_dict, key) {
-    if key in base_dict {
-        base_dict[key] += 1 
-    }
+function add_to_map(count_map, key) {
+    const count_or = count_map.get(key)
+    const count = count_or ? count_or : 0
+    count_map.set(key, count + 1)
 }
 
 async function main() {
@@ -15,15 +15,17 @@ async function main() {
             }
         })
 
-    let data = mempool_result.data
+    const count_map = new Map()
     for (const tx of mempool_result.data.transaction_identifiers) {
         try {
             const tx_result = await axios
                 .get('https://stacks-node-api.mainnet.stacks.co/extended/v1/tx/' + tx.hash)
             let data = tx_result.data
             let tx_status = data.tx_status
+            console.log(tx_status)
+            add_to_map(count_map, tx_status)
             console.log({
-                tx_status
+                count_map
             })
         } catch (e) {
             console.log({
@@ -31,6 +33,9 @@ async function main() {
             })
         }
     }
+    console.log({
+        count_map
+    })
 }
 
 main()
