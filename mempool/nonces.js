@@ -32,6 +32,7 @@ async function main() {
                 tx_status
             })
             if (tx_status != 'pending') {
+		    add_to_map(count_map, tx_status)
                 continue
             }
 
@@ -48,14 +49,15 @@ async function main() {
                 needed_nonce
             })
 
+		let print_status = tx_status + '--'
             if (mempool_nonce < needed_nonce) {
-                add_to_map(count_map, 'too-low')
+                add_to_map(count_map, print_status + 'too-low')
             }
             if (mempool_nonce == needed_nonce) {
-                add_to_map(count_map, 'correct')
+                add_to_map(count_map, print_status + 'correct')
             }
             if (mempool_nonce > needed_nonce) {
-                add_to_map(count_map, 'too-high')
+                add_to_map(count_map, print_status + 'too-high')
             }
         } catch (e) {
             console.log({

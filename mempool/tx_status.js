@@ -7,8 +7,6 @@ function add_to_map(count_map, key) {
 }
 
 async function main() {
-	console.log('hello')
-
     const mempool_result = await axios
         .post('http://127.0.0.1:3999/rosetta/v1/mempool', {
             network_identifier: {
