@@ -9,7 +9,7 @@ async function main() {
     const client = new Client()
     await client.connect()
     // const res = await client.query('SELECT NOW()')
-    const res = await client.query('select block_hash, block_height, tx_id, status, microblock_hash, execution_cost_read_count, execution_cost_read_length, execution_cost_runtime, execution_cost_write_count, execution_cost_write_length, length(raw_result) from txs order by block_height desc limit 5000')
+    const res = await client.query('select block_hash, burn_block_time, block_height, tx_id, status, microblock_hash, execution_cost_read_count, execution_cost_read_length, execution_cost_runtime, execution_cost_write_count, execution_cost_write_length, length(raw_result) from txs order by block_height desc limit 100000')
 
     const block_hash_set = new Set()
     const block_txs_map = new Map()
@@ -64,6 +64,8 @@ async function main() {
         }
         var fraction = {
             block_hash,
+            block_height: tx_list[0].block_height,
+            burn_block_time: new Date(parseInt(tx_list[0].burn_block_time, 10) * 1000),
             total_txs: tx_list.length,
         }
         for (const index of indices) {
