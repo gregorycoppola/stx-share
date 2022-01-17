@@ -3,13 +3,18 @@ const {
     Client
 } = require('pg')
 
+const process = require('process')
+
 async function main() {
+    const block_height_arg = process.argv[2]
+    const block_height = block_height_arg ? block_height_arg : '45000'
+
     // clients will also use environment variables
     // for connection information
     const client = new Client()
     await client.connect()
-    // const res = await client.query('SELECT NOW()')
-    const res = await client.query('select block_hash, burn_block_time, block_height, tx_id, status, microblock_hash, execution_cost_read_count, execution_cost_read_length, execution_cost_runtime, execution_cost_write_count, execution_cost_write_length, length(raw_result) from txs where canonical = true and microblock_canonical = true order by block_height desc limit 100000')
+    const query = `select block_hash, burn_block_time, block_height, tx_id, status, microblock_hash, execution_cost_read_count, execution_cost_read_length, execution_cost_runtime, execution_cost_write_count, execution_cost_write_length, length(raw_result) from txs where canonical = true and microblock_canonical = true and block_height >= ${block_height} order by block_height desc`
+    const res = await client.query(query)
 
     const block_hash_set = new Set()
     const block_txs_map = new Map()
@@ -25,8 +30,8 @@ async function main() {
     }
     await client.end()
 
-    block_hash_set.delete('')  // currently constructed block
-    block_hash_set.delete(last_block_hash)  // last block mentioned, might be incomplete
+    block_hash_set.delete('') // currently constructed block
+    block_hash_set.delete(last_block_hash) // last block mentioned, might be incomplete
 
     const indices = [
         'execution_cost_read_count',
@@ -49,23 +54,27 @@ async function main() {
 
     for (const block_hash of block_hash_set) {
         const tx_list = block_txs_map.get(block_hash)
-            var sum = {
-                execution_cost_read_count: 0,
-                execution_cost_read_length: 0,
-                execution_cost_runtime: 0,
-                execution_cost_write_count: 0,
-                execution_cost_write_length: 0,
-                length: 0,
-            }
+        var sum = {
+            execution_cost_read_count: 0,
+            execution_cost_read_length: 0,
+            execution_cost_runtime: 0,
+            execution_cost_write_count: 0,
+            execution_cost_write_length: 0,
+            length: 0,
+        }
         for (const tx of tx_list) {
             for (const index of indices) {
                 sum[index] += parseInt(tx[index], 10)
             }
         }
+
+        const burn_block_time = new Date(parseInt(tx_list[0].burn_block_time, 10) * 1000).toLocaleString("en-US", {
+            timeZone: "America/New_York"
+        })
         var fraction = {
             block_hash,
             block_height: tx_list[0].block_height,
-            burn_block_time: new Date(parseInt(tx_list[0].burn_block_time, 10) * 1000),
+            burn_block_time,
             total_txs: tx_list.length,
         }
         for (const index of indices) {
