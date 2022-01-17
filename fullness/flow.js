@@ -77,9 +77,19 @@ async function main() {
             burn_block_time,
             total_txs: tx_list.length,
         }
+
+        var sum_fraction = 0.0
+        var max_fraction = 0.0
         for (const index of indices) {
-            fraction[index] = sum[index] * 1.0 / limits[index]
+            const this_fraction = sum[index] * 1.0 / limits[index]
+            if (this_fraction > max_fraction) {
+                max_fraction = this_fraction;
+            }
+            sum_fraction += this_fraction
+            fraction[index] = this_fraction;
         }
+        fraction['execution_cost_max_dimension'] = max_fraction;
+        fraction['execution_cost_sum'] = sum_fraction;
         console.log(fraction)
     }
 }
