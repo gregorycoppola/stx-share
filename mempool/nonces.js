@@ -5,7 +5,7 @@ function add_to_map(count_map, key) {
     const count = count_or ? count_or : 0
     count_map.set(key, count + 1)
     console.log({
-        count_map
+        count_map,
     })
 }
 
@@ -22,7 +22,9 @@ async function main() {
     })
 
     const count_map = new Map()
+	var i = 0
     for (const tx of mempool_result.data.transaction_identifiers) {
+	    i += 1
         try {
             const tx_result = await axios
                 .get('http://127.0.0.1:3999/extended/v1/tx/' + tx.hash)
@@ -32,6 +34,7 @@ async function main() {
                 tx_status
             })
             if (tx_status != 'pending') {
+		    add_to_map(count_map, tx_status)
                 continue
             }
 
@@ -48,15 +51,17 @@ async function main() {
                 needed_nonce
             })
 
+		let print_status = tx_status + '--'
             if (mempool_nonce < needed_nonce) {
-                add_to_map(count_map, 'too-low')
+                add_to_map(count_map, print_status + 'nonce-too-low')
             }
             if (mempool_nonce == needed_nonce) {
-                add_to_map(count_map, 'correct')
+                add_to_map(count_map, print_status + 'nonce-correct')
             }
             if (mempool_nonce > needed_nonce) {
-                add_to_map(count_map, 'too-high')
+                add_to_map(count_map, print_status + 'nonce-too-high')
             }
+
         } catch (e) {
             console.log({
                 e
@@ -64,7 +69,8 @@ async function main() {
         }
     }
     console.log({
-        count_map
+	    total_examples: i,
+        count_map,
     })
 }
 
