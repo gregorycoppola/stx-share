@@ -9,7 +9,7 @@ async function main() {
     const client = new Client()
     await client.connect()
     // const res = await client.query('SELECT NOW()')
-    const res = await client.query('select block_hash, burn_block_time, block_height, tx_id, status, microblock_hash, execution_cost_read_count, execution_cost_read_length, execution_cost_runtime, execution_cost_write_count, execution_cost_write_length, length(raw_result) from txs order by block_height desc limit 100000')
+    const res = await client.query('select block_hash, burn_block_time, block_height, tx_id, status, microblock_hash, execution_cost_read_count, execution_cost_read_length, execution_cost_runtime, execution_cost_write_count, execution_cost_write_length, length(raw_result) from txs where canonical = true and microblock_canonical = true order by block_height desc limit 100000')
 
     const block_hash_set = new Set()
     const block_txs_map = new Map()
