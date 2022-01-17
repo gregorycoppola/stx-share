@@ -67,7 +67,7 @@ async function main() {
             total_txs: tx_list.length,
         }
         for (const index of indices) {
-            fraction[index] = sum[index] * 1.0 // limits[index]
+            fraction[index] = sum[index] * 1.0 / limits[index]
         }
         console.log(fraction)
     }
