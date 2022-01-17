@@ -1,0 +1,3 @@
+recreate mempool size from past data
+  compare this to block fullness
+why do measures sometimes go over 1?
