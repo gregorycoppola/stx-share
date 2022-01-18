@@ -52,6 +52,7 @@ async function main() {
         length: 2 * 1024 * 1024,
     }
 
+    var output_tuples = []
     for (const block_hash of block_hash_set) {
         const tx_list = block_txs_map.get(block_hash)
         var sum = {
@@ -71,7 +72,7 @@ async function main() {
         const burn_block_time = new Date(parseInt(tx_list[0].burn_block_time, 10) * 1000).toLocaleString("en-US", {
             timeZone: "America/New_York"
         })
-        var fraction = {
+        var output_tuple = {
             block_hash,
             block_height: tx_list[0].block_height,
             burn_block_time,
@@ -86,12 +87,15 @@ async function main() {
                 max_fraction = this_fraction;
             }
             sum_fraction += this_fraction
-            fraction[index] = this_fraction;
+            output_tuple[index] = this_fraction;
         }
-        fraction['execution_cost_max_dimension'] = max_fraction;
-        fraction['execution_cost_sum'] = sum_fraction;
-        console.log(fraction)
+        output_tuple['execution_cost_max_dimension'] = max_fraction;
+        output_tuple['execution_cost_sum'] = sum_fraction;
+
+        output_tuples.push(output_tuple)
     }
+
+    console.log(output_tuples)
 }
 
 main()
