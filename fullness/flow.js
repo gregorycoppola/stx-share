@@ -95,7 +95,7 @@ async function main() {
         output_tuples.push(output_tuple)
     }
 
-    console.log(output_tuples)
+    console.log(JSON.stringify(output_tuples))
 }
 
 main()
