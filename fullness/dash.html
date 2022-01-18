@@ -1,78 +1,74 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
 </head>
+
 <body>
 
-<div id="myPlot" style="width:100%;max-width:700px"></div>
+    <div id="myPlot" style="width:100%;max-width:700px"></div>
 
-<script>
-//var xArray = [50,60,70,80,90,100,110,120,130,140,150];
-//var yArray = [7,8,8,9,9,9,10,11,14,14,15];
-//// Define Data
-//var data = [{
-//  x:xArray,
-//  y:yArray,
-//  mode:"markers"
-//}];
-
-//// Define Layout
-//var layout = {
-//  xaxis: {range: [40, 160], title: "Square Meters"},
-//  yaxis: {range: [5, 16], title: "Price in Millions"},
-//  title: "House Prices vs. Size"
-//};
-
-
-function displayJson(jsonData) {
-	var x_list = [];
-	var y_list = [];
-	for (const tuple of jsonData) {
-		x_list.push(tuple.block_height);
-		y_list.push(tuple.execution_cost_max_dimension);
-	}
-	const data = [{
-		x: x_list,
-		y: y_list,
-		mode: "markers",
-	}];
-	var layout = {
-		xaxis: {range: [45000, 45575], title: "Block Height"},
-		yaxis: {range: [0, 1], title: "Block usage (Max dimension fraction)"},
-		title: "Block Usage over Time"
-	};
-// Display using Plotly
-Plotly.newPlot("myPlot", data, layout);
-}
+    <script>
+        function displayJson(jsonData) {
+            var x_list = [];
+            var y_list = [];
+            for (const tuple of jsonData) {
+                x_list.push(tuple.block_height);
+                y_list.push(tuple.execution_cost_max_dimension);
+            }
+            const data = [{
+                x: x_list,
+                y: y_list,
+                mode: "markers",
+            }];
+            var layout = {
+                xaxis: {
+                    range: [45000, 45575],
+                    title: "Block Height"
+                },
+                yaxis: {
+                    range: [0, 1],
+                    title: "Block usage (Max dimension fraction)"
+                },
+                title: "Block Usage over Time"
+            };
+            // Display using Plotly
+            Plotly.newPlot("myPlot", data, layout);
+        }
 
 
-const data_url = "https://raw.githubusercontent.com/gregorycoppola/stx-share/main/fullness/output/45000-45575.json";
+        const data_url = "https://raw.githubusercontent.com/gregorycoppola/stx-share/main/fullness/output/45000-45575.json";
 
-var jqxhr = $.getJSON( data_url, function(data) {
-  console.log( "success", {data} );
-	displayJson(data);
-})
-  .done(function() {
-    console.log( "second success" );
-  })
-  .fail(function(e) {
-    console.log( "error", e );
-		const obj = JSON.parse(e.responseText);
-		console.log({obj});
-  })
-  .always(function() {
-    console.log( "complete" );
-  });
+        var jqxhr = $.getJSON(data_url, function(data) {
+                console.log("success", {
+                    data
+                });
+                displayJson(data);
+            })
+            .done(function() {
+                console.log("second success");
+            })
+            .fail(function(e) {
+                console.log("error", e);
+                const obj = JSON.parse(e.responseText);
+                console.log({
+                    obj
+                });
+            })
+            .always(function() {
+                console.log("complete");
+            });
 
-// Perform other work here ...
+        // Perform other work here ...
 
-// Set another completion function for the request above
-jqxhr.always(function() {
-  console.log( "second complete" );
-});
-</script>
+        // Set another completion function for the request above
+        jqxhr.always(function() {
+            console.log("second complete");
+        });
+    </script>
 
 </body>
+
 </html>
