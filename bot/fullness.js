@@ -42,7 +42,9 @@ async function get_previous_max_block_height(output_client) {
         select max(block_height) from block_fullness
         `
     const result = await output_client.query(select_statement)
-    console.log({result})
+    console.log({
+        result
+    })
     return result.rows[0].max
 }
 
@@ -143,29 +145,35 @@ async function write_tuples_to_db(output_tuples, output_client) {
     }
 }
 
-async function main() {
-        const input_config = read_config(process.argv[2], 'input_config')
-        const output_config = read_config(process.argv[3], 'output_config')
-        console.log({
-            input_config,
-            output_config,
-        })
-        const input_client = new Client(input_config)
-        await input_client.connect()
-        const output_client = new Client(output_config)
-        await output_client.connect()
+async function run() {
+    const input_config = read_config(process.argv[2], 'input_config')
+    const output_config = read_config(process.argv[3], 'output_config')
+    console.log({
+        input_config,
+        output_config,
+    })
+    const input_client = new Client(input_config)
+    await input_client.connect()
+    const output_client = new Client(output_config)
+    await output_client.connect()
     try {
         const previous_max_block_height = await get_previous_max_block_height(output_client)
-        console.log({previous_max_block_height})
+        console.log({
+            previous_max_block_height
+        })
         const select_output = await select_new_blocks(input_client, previous_max_block_height)
         const output_tuples = create_output_tuples(select_output)
         write_tuples_to_db(output_tuples, output_client)
 
     } catch (error) {
-        console.log({error})
+        console.log({
+            error
+        })
     }
-        await input_client.end()
-        await output_client.end()
+    await input_client.end()
+    await output_client.end()
 }
 
-main()
+module.exports = {
+    run
+}

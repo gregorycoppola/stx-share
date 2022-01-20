@@ -1,4 +1,5 @@
 const process = require('process')
+const fullness = require('./fullness')
 
 function sleep(ms) {
   return new Promise((resolve) => {
@@ -8,8 +9,15 @@ function sleep(ms) {
 
 async function main() {
     while(true) {
-        console.log("sleeping...")
-        await sleep(1000)
+        const sleep_time = 60 * 1000
+        console.log(`sleeping... ${sleep_time}`)
+        await sleep(sleep_time)
+
+        try {
+            await fullness.run()
+        } catch (e) {
+            console.log({e})
+        }
     }
 }
 
