@@ -25,7 +25,7 @@ function make_insert_statement(table_name, output_tuple) {
         }
         keys_part += key
         if (typeof(value) == 'string') {
-            values_part += '"' + value + '"'
+            values_part += "'" + value + "'"
         } else {
             values_part += value
         }
@@ -46,12 +46,10 @@ async function main() {
 
     const block_height = '45000'
 
-    // clients will also use environment variables
-    // for connection information
     const input_client = new Client(input_config)
     await input_client.connect()
-    const query = `select block_hash, burn_block_time, block_height, tx_id, status, microblock_hash, execution_cost_read_count, execution_cost_read_length, execution_cost_runtime, execution_cost_write_count, execution_cost_write_length, length(raw_result) from txs where canonical = true and microblock_canonical = true and block_height >= ${block_height} order by block_height desc`
-    const res = await input_client.query(query)
+    const select_statement = `select block_hash, burn_block_time, block_height, tx_id, status, microblock_hash, execution_cost_read_count, execution_cost_read_length, execution_cost_runtime, execution_cost_write_count, execution_cost_write_length, length(raw_result) from txs where canonical = true and microblock_canonical = true and block_height >= ${block_height} order by block_height desc`
+    const res = await input_client.query(select_statement)
 
     const block_hash_set = new Set()
     const block_txs_map = new Map()
@@ -89,6 +87,7 @@ async function main() {
         length: 2 * 1024 * 1024,
     }
 
+    var output_tuples = []
     for (const block_hash of block_hash_set) {
         const tx_list = block_txs_map.get(block_hash)
         var sum = {
@@ -129,12 +128,18 @@ async function main() {
         output_tuple['execution_cost_sum'] = sum_fraction;
 
         console.log(output_tuple)
+        output_tuples.push(output_tuple)
 
-        const insert_statement = make_insert_statement('block_fullness', output_tuple)
-        console.log({
-            insert_statement
-        })
     }
+
+    const output_client = new Client(output_config)
+    await output_client.connect()
+    for (const output_tuple of output_tuples) {
+        const insert_statement = make_insert_statement('block_fullness', output_tuple)
+        console.log(insert_statement)
+        const res = await output_client.query(insert_statement)
+    }
+    await output_client.end()
 }
 
 main()
