@@ -39,12 +39,11 @@ function make_insert_statement(table_name, output_tuple) {
 
 async function get_previous_max_block_height(output_client) {
     const select_statement = `
-        select block_height from block_fullness
+        select max(block_height) from block_fullness
         `
     const result = await output_client.query(select_statement)
     console.log({result})
-    // JSON.stringify(result, undefined, 2)
-    return 45000
+    return result.rows[0].max
 }
 
 async function select_new_blocks(input_client, previous_max_block_height) {
