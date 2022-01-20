@@ -14,10 +14,35 @@ function read_config(fname, description) {
     return JSON.parse(config_file)
 }
 
+function make_insert_statement(table_name, output_tuple) {
+    var keys_part = ''
+    var values_part = ''
+    var add_comma = false
+    for (let [key, value] of Object.entries(output_tuple)) {
+        if (add_comma) {
+            keys_part += ', '
+            values_part += ', '
+        }
+        keys_part += key
+        if (typeof(value) == 'string') {
+            values_part += '"' + value + '"'
+        } else {
+            values_part += value
+        }
+        add_comma = true
+    }
+
+    const result = `insert into ${table_name}(${keys_part}) values (${values_part})`
+    console.log(result)
+    return result
+}
+
 async function main() {
     const input_config = read_config(process.argv[2], 'input_config')
     const output_config = read_config(process.argv[3], 'output_config')
-    console.log({input_config})
+    console.log({
+        input_config
+    })
 
     const block_height = '45000'
 
@@ -104,6 +129,11 @@ async function main() {
         output_tuple['execution_cost_sum'] = sum_fraction;
 
         console.log(output_tuple)
+
+        const insert_statement = make_insert_statement('block_fullness', output_tuple)
+        console.log({
+            insert_statement
+        })
     }
 }
 
