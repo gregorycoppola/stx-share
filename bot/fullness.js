@@ -63,7 +63,6 @@ async function select_new_blocks(input_client, previous_max_block_height) {
         block_txs_map.set(block_hash, txs)
     }
     block_hash_set.delete('') // currently constructed block
-    block_hash_set.delete(last_block_hash) // last block mentioned, might be incomplete
     return {
         block_hash_set,
         block_txs_map,
