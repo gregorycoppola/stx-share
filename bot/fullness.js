@@ -6,10 +6,17 @@ const {
 const process = require('process')
 const fs = require('fs')
 
+function read_config(fname, description) {
+    if (!fname) {
+        throw new Error("filename doesn't exist for " + description)
+    }
+    const config_file = fs.readFileSync(fname)
+    return JSON.parse(config_file)
+}
+
 async function main() {
-    const input_config_fname = process.argv[2]
-    const input_config_file = fs.readFileSync(input_config_fname)
-    const input_config = JSON.parse(input_config_file)
+    const input_config = read_config(process.argv[2], 'input_config')
+    const output_config = read_config(process.argv[3], 'output_config')
     console.log({input_config})
 
     const block_height = '45000'
@@ -57,7 +64,6 @@ async function main() {
         length: 2 * 1024 * 1024,
     }
 
-    var output_tuples = []
     for (const block_hash of block_hash_set) {
         const tx_list = block_txs_map.get(block_hash)
         var sum = {
@@ -97,10 +103,8 @@ async function main() {
         output_tuple['execution_cost_max_dimension'] = max_fraction;
         output_tuple['execution_cost_sum'] = sum_fraction;
 
-        output_tuples.push(output_tuple)
+        console.log(output_tuple)
     }
-
-    console.log(JSON.stringify(output_tuples))
 }
 
 main()
