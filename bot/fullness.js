@@ -37,17 +37,7 @@ function make_insert_statement(table_name, output_tuple) {
     return result
 }
 
-async function main() {
-    const input_config = read_config(process.argv[2], 'input_config')
-    const output_config = read_config(process.argv[3], 'output_config')
-    console.log({
-        input_config
-    })
-
-    const block_height = '45000'
-
-    const input_client = new Client(input_config)
-    await input_client.connect()
+async function select_new_blocks(input_client, previous_max_block_height) {
     const select_statement = `select block_hash, burn_block_time, block_height, tx_id, status, microblock_hash, execution_cost_read_count, execution_cost_read_length, execution_cost_runtime, execution_cost_write_count, execution_cost_write_length, length(raw_result) from txs where canonical = true and microblock_canonical = true and block_height >= ${block_height} order by block_height desc`
     const res = await input_client.query(select_statement)
 
@@ -63,11 +53,15 @@ async function main() {
         last_block_hash = block_hash
         block_txs_map.set(block_hash, txs)
     }
-    await input_client.end()
-
     block_hash_set.delete('') // currently constructed block
     block_hash_set.delete(last_block_hash) // last block mentioned, might be incomplete
+    return {
+        block_hash_set,
+        block_txs_map,
+    }
+}
 
+function create_output_tuples(select_output) {
     const indices = [
         'execution_cost_read_count',
         'execution_cost_read_length',
@@ -76,7 +70,6 @@ async function main() {
         'execution_cost_write_length',
         'length',
     ]
-
 
     var limits = {
         execution_cost_read_count: 15000,
@@ -129,16 +122,37 @@ async function main() {
 
         console.log(output_tuple)
         output_tuples.push(output_tuple)
-
     }
+    return output_tuples
+}
 
-    const output_client = new Client(output_config)
-    await output_client.connect()
+async function write_tuples_to_db(output_tuples, output_client) {
     for (const output_tuple of output_tuples) {
         const insert_statement = make_insert_statement('block_fullness', output_tuple)
         console.log(insert_statement)
-        const res = await output_client.query(insert_statement)
+        await output_client.query(insert_statement)
     }
+}
+
+async function main() {
+    const input_config = read_config(process.argv[2], 'input_config')
+    const output_config = read_config(process.argv[3], 'output_config')
+    console.log({
+        input_config,
+        output_config,
+    })
+
+    const input_client = new Client(input_config)
+    await input_client.connect()
+    const output_client = new Client(output_config)
+    await output_client.connect()
+
+    const previous_max_block_height = get_previous_max_block_height(output_client)
+    const select_output = select_new_blocks(input_client, previous_max_block_height)
+    const output_tuples = create_output_tuples(select_output)
+    write_tuples_to_db(output_tuples, output_client)
+
+    await input_client.end()
     await output_client.end()
 }
 
