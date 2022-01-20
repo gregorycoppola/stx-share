@@ -145,19 +145,17 @@ async function write_tuples_to_db(output_tuples, output_client) {
 }
 
 async function main() {
-    try {
         const input_config = read_config(process.argv[2], 'input_config')
         const output_config = read_config(process.argv[3], 'output_config')
         console.log({
             input_config,
             output_config,
         })
-
         const input_client = new Client(input_config)
         await input_client.connect()
         const output_client = new Client(output_config)
         await output_client.connect()
-
+    try {
         const previous_max_block_height = await get_previous_max_block_height(output_client)
         console.log({previous_max_block_height})
         const select_output = await select_new_blocks(input_client, previous_max_block_height)
