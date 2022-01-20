@@ -37,14 +37,24 @@ function make_insert_statement(table_name, output_tuple) {
     return result
 }
 
+async function get_previous_max_block_height(output_client) {
+    const select_statement = `
+        select block_height from block_fullness
+        `
+    const result = await output_client.query(select_statement)
+    console.log({result})
+    // JSON.stringify(result, undefined, 2)
+    return 45000
+}
+
 async function select_new_blocks(input_client, previous_max_block_height) {
-    const select_statement = `select block_hash, burn_block_time, block_height, tx_id, status, microblock_hash, execution_cost_read_count, execution_cost_read_length, execution_cost_runtime, execution_cost_write_count, execution_cost_write_length, length(raw_result) from txs where canonical = true and microblock_canonical = true and block_height >= ${block_height} order by block_height desc`
-    const res = await input_client.query(select_statement)
+    const select_statement = `select block_hash, burn_block_time, block_height, tx_id, status, microblock_hash, execution_cost_read_count, execution_cost_read_length, execution_cost_runtime, execution_cost_write_count, execution_cost_write_length, length(raw_result) from txs where canonical = true and microblock_canonical = true and block_height > ${previous_max_block_height} order by block_height desc`
+    const result = await input_client.query(select_statement)
 
     const block_hash_set = new Set()
     const block_txs_map = new Map()
     var last_block_hash = undefined // delete the last used block because it's not necessarily complete
-    for (const row of res.rows) {
+    for (const row of result.rows) {
         const block_hash = row.block_hash.toString('hex')
         const txs_or = block_txs_map.get(block_hash)
         const txs = txs_or ? txs_or : []
@@ -81,8 +91,9 @@ function create_output_tuples(select_output) {
     }
 
     var output_tuples = []
-    for (const block_hash of block_hash_set) {
-        const tx_list = block_txs_map.get(block_hash)
+    console.log(select_output)
+    for (const block_hash of select_output.block_hash_set) {
+        const tx_list = select_output.block_txs_map.get(block_hash)
         var sum = {
             execution_cost_read_count: 0,
             execution_cost_read_length: 0,
@@ -135,25 +146,30 @@ async function write_tuples_to_db(output_tuples, output_client) {
 }
 
 async function main() {
-    const input_config = read_config(process.argv[2], 'input_config')
-    const output_config = read_config(process.argv[3], 'output_config')
-    console.log({
-        input_config,
-        output_config,
-    })
+    try {
+        const input_config = read_config(process.argv[2], 'input_config')
+        const output_config = read_config(process.argv[3], 'output_config')
+        console.log({
+            input_config,
+            output_config,
+        })
 
-    const input_client = new Client(input_config)
-    await input_client.connect()
-    const output_client = new Client(output_config)
-    await output_client.connect()
+        const input_client = new Client(input_config)
+        await input_client.connect()
+        const output_client = new Client(output_config)
+        await output_client.connect()
 
-    const previous_max_block_height = get_previous_max_block_height(output_client)
-    const select_output = select_new_blocks(input_client, previous_max_block_height)
-    const output_tuples = create_output_tuples(select_output)
-    write_tuples_to_db(output_tuples, output_client)
+        const previous_max_block_height = await get_previous_max_block_height(output_client)
+        console.log({previous_max_block_height})
+        const select_output = await select_new_blocks(input_client, previous_max_block_height)
+        const output_tuples = create_output_tuples(select_output)
+        write_tuples_to_db(output_tuples, output_client)
 
-    await input_client.end()
-    await output_client.end()
+    } catch (error) {
+        console.log({error})
+    }
+        await input_client.end()
+        await output_client.end()
 }
 
 main()
