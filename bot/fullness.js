@@ -4,17 +4,22 @@ const {
 } = require('pg')
 
 const process = require('process')
+const fs = require('fs')
 
 async function main() {
-    const block_height_arg = process.argv[2]
-    const block_height = block_height_arg ? block_height_arg : '45000'
+    const input_config_fname = process.argv[2]
+    const input_config_file = fs.readFileSync(input_config_fname)
+    const input_config = JSON.parse(input_config_file)
+    console.log({input_config})
+
+    const block_height = '45000'
 
     // clients will also use environment variables
     // for connection information
-    const client = new Client()
-    await client.connect()
+    const input_client = new Client(input_config)
+    await input_client.connect()
     const query = `select block_hash, burn_block_time, block_height, tx_id, status, microblock_hash, execution_cost_read_count, execution_cost_read_length, execution_cost_runtime, execution_cost_write_count, execution_cost_write_length, length(raw_result) from txs where canonical = true and microblock_canonical = true and block_height >= ${block_height} order by block_height desc`
-    const res = await client.query(query)
+    const res = await input_client.query(query)
 
     const block_hash_set = new Set()
     const block_txs_map = new Map()
@@ -28,7 +33,7 @@ async function main() {
         last_block_hash = block_hash
         block_txs_map.set(block_hash, txs)
     }
-    await client.end()
+    await input_client.end()
 
     block_hash_set.delete('') // currently constructed block
     block_hash_set.delete(last_block_hash) // last block mentioned, might be incomplete
