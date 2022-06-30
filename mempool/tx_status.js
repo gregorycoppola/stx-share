@@ -1,5 +1,7 @@
 const axios = require('axios')
 
+const base_url = 'https://stacks-node-api.mainnet.stacks.co/'
+
 async function main() {
     const mempool_result = await axios
         .post('http://127.0.0.1:3999/rosetta/v1/mempool', {

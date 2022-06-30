@@ -12,17 +12,21 @@ function sleep(ms) {
 
 async function main() {
     while (true) {
-        const mempool_result = await axios
-            .post('https://stacks-node-api.mainnet.stacks.co/rosetta/v1/mempool', {
-                network_identifier: {
-                    blockchain: "stacks",
-                    network: "mainnet"
-                }
-            })
+        try {
+            const mempool_result = await axios
+                .post('https://stacks-node-api.mainnet.stacks.co/rosetta/v1/mempool', {
+                    network_identifier: {
+                        blockchain: "stacks",
+                        network: "mainnet"
+                    }
+                })
+            const date = new Date()
+            const ids = mempool_result.data.transaction_identifiers
+            console.log(date, {id_size : ids.length})
+        } catch (error) {
+            console.log({error})
+        }
 
-        const date = new Date()
-        const ids = mempool_result.data.transaction_identifiers
-        console.log(date, {id_size : ids.length})
         await sleep(30 * 1000)
     }
 }
