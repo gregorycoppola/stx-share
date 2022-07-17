@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+</head>
+
+<body>
+
+    <div id="myPlot" style="width:100%;max-width:700px"></div>
+
+    <script>
+        function displayJson(jsonData) {
+            var x_list = [];
+            var y_list = [];
+            for (const tuple of jsonData) {
+                x_list.push(tuple.timestamp);
+                y_list.push(tuple.mempool_size);
+            }
+            const data = [{
+                x: x_list,
+                y: y_list,
+                mode: "markers",
+            }];
+            var layout = {
+                xaxis: {
+                    // range: [45000, 45575],
+                    title: "Block Height"
+                },
+                yaxis: {
+                    // range: [0, 1],
+                    title: "Block usage (Max dimension fraction)"
+                },
+                title: "Block Usage over Time"
+            };
+            // Display using Plotly
+            Plotly.newPlot("myPlot", data, layout);
+        }
+
+
+        // const data_url = "https://raw.githubusercontent.com/gregorycoppola/stx-share/main/data/steady-lads-1-mempool.clean.json";
+        const data_url = "file://home/greg/stx-share/data/steady-lads-1-mempool.clean.json";
+
+        var jqxhr = $.getJSON(data_url, function(data) {
+                console.log("success", {
+                    data
+                });
+                displayJson(data);
+            })
+            .done(function() {
+                console.log("second success");
+            })
+            .fail(function(e) {
+                console.log("error", e);
+                const obj = JSON.parse(e.responseText);
+                console.log({
+                    obj
+                });
+            })
+            .always(function() {
+                console.log("complete");
+            });
+
+        // Perform other work here ...
+
+        // Set another completion function for the request above
+        jqxhr.always(function() {
+            console.log("second complete");
+        });
+    </script>
+
+</body>
+
+</html>
