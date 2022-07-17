@@ -31,6 +31,10 @@ const end_timestamp = new Date('2022-07-02T16:40:51.000Z')
 var max_tps = 0
 var sum_tps = 0
 var total_tps = 0
+
+var max_tx = 0
+var sum_tx = 0
+var total_tx = 0
 for (var json_index = 0; json_index < json_list.length; json_index += 1) {
 
     const json_item = json_list[json_index]
@@ -41,7 +45,7 @@ for (var json_index = 0; json_index < json_list.length; json_index += 1) {
     
     if (timestamp < start_timestamp || timestamp > end_timestamp) {
         continue
-        
+
     }
     const tx_size = json_item.txs.length
     console.log({tx_size})
@@ -49,6 +53,13 @@ for (var json_index = 0; json_index < json_list.length; json_index += 1) {
     if (json_index - WINDOW_SIZE < 0) {
         continue;
     }
+
+    const num_tx = json_item.txs.length
+    if (num_tx > max_tx) {
+        max_tx = num_tx;
+    }
+    sum_tx += num_tx;
+    total_tx += 1;
 
     var sum = 0;
     for (var count_index = 0; count_index < WINDOW_SIZE; count_index += 1) {
@@ -79,3 +90,7 @@ for (var json_index = 0; json_index < json_list.length; json_index += 1) {
 const avg_tps = sum_tps / total_tps
 console.log({max_tps})
 console.log({avg_tps})
+
+const avg_tx = sum_tx / total_tx
+console.log({max_tx})
+console.log({avg_tx})
