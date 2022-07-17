@@ -40,6 +40,13 @@ for (var json_index = 0; json_index < json_list.length; json_index += 1) {
         console.log({count_itemdate}) 
         console.log({count_itemtx_size})
     }
+
+    const last_time = new Date(json_list[json_index - WINDOW_SIZE].burn_block_time_iso)
+    const time_diff_seconds = (date - last_time) / 1000
     console.log({sum})
+    console.log({time_diff_seconds})
+
+    const tps = sum / time_diff_seconds
+    console.log({tps})
 
 }
