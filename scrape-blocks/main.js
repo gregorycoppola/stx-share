@@ -28,4 +28,9 @@ async function main() {
     }
 }
 
+TX_JSON_FNAME = process.argv[2]
+console.log({TX_JSON_FNAME})
+
+run_internal(TX_JSON_FNAME)
+
 main()

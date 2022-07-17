@@ -60,7 +60,12 @@ async function run_internal(db_file) {
 
 
 
-TX_JSON_FNAME = process.argv[2]
-console.log({TX_JSON_FNAME})
+// TX_JSON_FNAME = process.argv[2]
+// console.log({TX_JSON_FNAME})
 
-run_internal(TX_JSON_FNAME)
+// run_internal(TX_JSON_FNAME)
+
+
+module.exports = {
+    run_internal
+}
