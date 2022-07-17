@@ -25,6 +25,9 @@ json_list.reverse()
 
 WINDOW_SIZE = 6
 
+const start_timestamp = new Date('2022-06-29T20:29:00.000Z')
+const end_timestamp = new Date('2022-07-02T16:40:51.000Z')
+
 var max_tps = 0
 var sum_tps = 0
 var total_tps = 0
@@ -33,9 +36,12 @@ for (var json_index = 0; json_index < json_list.length; json_index += 1) {
     const json_item = json_list[json_index]
     console.log({burn_block_time_iso: json_item.burn_block_time_iso})
 
-    const date = new Date(json_item.burn_block_time_iso)
-    console.log({date})
+    const timestamp = new Date(json_item.burn_block_time_iso)
+    console.log({date: timestamp})
     
+    if (timestamp < start_timestamp || timestamp > end_timestamp) {
+        continue
+    }
     const tx_size = json_item.txs.length
     console.log({tx_size})
 
@@ -54,7 +60,7 @@ for (var json_index = 0; json_index < json_list.length; json_index += 1) {
     }
 
     const last_time = new Date(json_list[json_index - WINDOW_SIZE].burn_block_time_iso)
-    const time_diff_seconds = (date - last_time) / 1000
+    const time_diff_seconds = (timestamp - last_time) / 1000
     console.log({sum})
     console.log({time_diff_seconds})
 
