@@ -11,23 +11,31 @@
     <div id="myPlot" style="width:100%;max-width:700px"></div>
 
     <script>
-        function displayJson(jsonData) {
+        function displayJson(mempoolData, throughputData) {
             var x_list = [];
             var y_list = [];
             var half_y_list = [];
             var count = 0;
-            for (const tuple of jsonData) {
+
+            const start_timestamp = new Date('2022-06-29T20:29:00.000Z')
+            const end_timestamp = new Date('2022-07-05T23:40:51.000Z')
+            for (const tuple of mempoolData) {
                 // Note: This comparison with 5000 is to adjust for the fact that two API nodes were alternating.
-                if (count % 10 == 0 && tuple.mempool_size < 3200) {
+                if (count % 10 == 0 && tuple.mempool_size < 3200 && tuple.timestamp > start_timestamp && tuple.timestamp < end_timestamp) {
                     x_list.push(tuple.timestamp);
                 y_list.push(tuple.mempool_size);
-                half_y_list.push(tuple.mempool_size / 2);
-
-                }
-
                 count += 1;
 
+                }
             }
+
+            for (const tuple of throughputData) {
+                // Note: This comparison with 5000 is to adjust for the fact that two API nodes were alternating.
+                    x_list.push(tuple.timestamp);
+                    half_y_list.push(tuple.tx_per_block);
+                
+            }
+
             const data = [
             {
                 x: x_list,
@@ -55,14 +63,31 @@
         }
 
 
-        const data_url = "https://raw.githubusercontent.com/gregorycoppola/stx-share/main/data/steady-lads-1-mempool.clean.json";
+        const mempool_url = "https://raw.githubusercontent.com/gregorycoppola/stx-share/main/data/steady-lads-1-mempool.clean.json";
+        const throughput_url = "https://raw.githubusercontent.com/gregorycoppola/stx-share/main/data/stead-lads-1-throughput.clean.json";
+
         // const data_url = "file://home/greg/stx-share/data/steady-lads-1-mempool.clean.json";
 
-        var jqxhr = $.getJSON(data_url, function(data) {
+        var jqxhr = $.getJSON(mempool_url, function(mempoolData) {
                 console.log("success", {
-                    data
+                    mempoolData
                 });
-                displayJson(data);
+                $.getJSON(throughput_url, function(throughputData) {
+                            console.log("success", {
+                                throughputData
+                            });
+                            displayJson(mempoolData, throughputData);
+                        })
+                        .done(function() {
+                            console.log("second success");
+                        })
+                        .fail(function(e) {
+                            console.log("error", e);
+                            const obj = JSON.parse(e.responseText);
+                            console.log({
+                                obj
+                            });
+                        })
             })
             .done(function() {
                 console.log("second success");
