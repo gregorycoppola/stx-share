@@ -16,4 +16,7 @@ json_list = JSON.parse(contents).results
 
 for (const json_item of json_list) {
     console.log({burn_block_time_iso: json_item.burn_block_time_iso})
+
+    const tx_size = json_item.txs.length
+    console.log({tx_size})
 }
