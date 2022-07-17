@@ -18,12 +18,21 @@
             var count = 0;
 
             const start_timestamp = new Date('2022-06-29T20:29:00.000Z')
-            const end_timestamp = new Date('2022-07-05T23:40:51.000Z')
+            const end_timestamp = new Date('2022-07-02T16:40:51.000Z')
             for (const tuple of mempoolData) {
                 // Note: This comparison with 5000 is to adjust for the fact that two API nodes were alternating.
-                if (count % 10 == 0 && tuple.mempool_size < 3200 && tuple.timestamp > start_timestamp && tuple.timestamp < end_timestamp) {
-                    x_list.push(tuple.timestamp);
+                let timestamp = new Date(tuple.timestamp)
+                console.log({
+                    timestamp,
+                    start_timestamp,
+                    end_timestamp,
+                })
+                if (/* count % 10 == 0 && */ tuple.mempool_size < 3200 && timestamp > start_timestamp && timestamp < end_timestamp) {
+                    if (count % 10 == 0 ) {
+                        x_list.push(tuple.timestamp);
                 y_list.push(tuple.mempool_size);
+                    }
+
                 count += 1;
 
                 }
