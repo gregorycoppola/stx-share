@@ -2,13 +2,15 @@ const axios = require('axios')
 const fs = require('fs')
 const assert = require('assert')
 
-async function read_blocks() {
-    const blocks_result = await axios.get('https://stacks-node-api.mainnet.stacks.co/extended/v1/block')
+async function read_blocks(start_block) {
+    const query = `https://stacks-node-api.mainnet.stacks.co/extended/v1/block?offset=${start_block}`
+    console.log({query})
+    // const blocks_result = await axios.get()
 
-    const blocks = blocks_result.data.results
+    // const blocks = blocks_result.data.results
 
-    console.log({blocks})
-    return blocks
+    // console.log({blocks})
+    // return blocks
 }
 
 function output_blocks(blocks, db_file) {
@@ -46,6 +48,8 @@ async function run_internal(db_file) {
 
     const last_block_id = find_latest_block_id(db_file)
     console.log({last_block_id})
+
+    const block_batch = read_blocks(last_block_id)
 
 }
 
