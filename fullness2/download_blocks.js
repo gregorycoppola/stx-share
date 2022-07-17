@@ -11,7 +11,9 @@ TX_JSON_FNAME = process.argv[2]
 console.log({TX_JSON_FNAME})
 
 const contents = fs.readFileSync(TX_JSON_FNAME)
-json_list = JSON.parse(contents)
+json_list = JSON.parse(contents).results
 
 
-console.log({json_list})
+for (const json_item of json_list) {
+    console.log({burn_block_time_iso: json_item.burn_block_time_iso})
+}
