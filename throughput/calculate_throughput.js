@@ -10,12 +10,24 @@ const fs = require('fs')
 TX_JSON_FNAME = process.argv[2]
 console.log({TX_JSON_FNAME})
 
-const contents = fs.readFileSync(TX_JSON_FNAME)
-json_list = JSON.parse(contents).results
+
+const contents = fs.readFileSync(TX_JSON_FNAME, 'utf8')
+const lines = contents.split('\n')
+var blocks = []
+for (const line of lines) {
+    if (line == '') {
+        continue
+    }
+    blocks.push(JSON.parse(line))
+}
+const json_list = blocks // redundant variable
 json_list.reverse()
 
 WINDOW_SIZE = 6
 
+var max_tps = 0
+var sum_tps = 0
+var total_tps = 0
 for (var json_index = 0; json_index < json_list.length; json_index += 1) {
 
     const json_item = json_list[json_index]
@@ -49,4 +61,14 @@ for (var json_index = 0; json_index < json_list.length; json_index += 1) {
     const tps = sum / time_diff_seconds
     console.log({tps})
 
+    if (tps > max_tps) {
+        max_tps = tps
+    }
+
+    sum_tps += tps
+    total_tps += 1
 }
+
+const avg_tps = sum_tps / total_tps
+console.log({max_tps})
+console.log({avg_tps})
