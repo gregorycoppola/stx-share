@@ -14,7 +14,9 @@ const contents = fs.readFileSync(TX_JSON_FNAME)
 json_list = JSON.parse(contents).results
 
 
-for (const json_item of json_list) {
+for (var json_index = 0; json_index < json_list.length; json_index += 1) {
+
+    const json_item = json_list[json_index]
     console.log({burn_block_time_iso: json_item.burn_block_time_iso})
 
     const date = new Date(json_item.burn_block_time_iso)
