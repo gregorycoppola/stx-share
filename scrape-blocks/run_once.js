@@ -1,5 +1,5 @@
 const axios = require('axios')
-
+const fs = require('fs')
 
 async function run_internal(db_file) {
 
@@ -10,7 +10,11 @@ async function run_internal(db_file) {
     console.log({blocks})
 
     for (const block of blocks) {
-        console.log({block})
+        const block_string = JSON.stringify(block)
+        console.log({block_string})
+
+
+        fs.appendFileSync(db_file, block_string + '\n');
     }
 
     console.log({db_file})
