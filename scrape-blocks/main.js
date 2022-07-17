@@ -7,13 +7,13 @@ function sleep(ms) {
     });
 }
 
-async function main() {
+async function main(db_file) {
     while (true) {
 
 
         try {
             console.log('going to run once')
-            await run_once.run()
+            await run_once.run_internal(db_file)
         } catch (e) {
             console.log({
                 e
@@ -31,6 +31,4 @@ async function main() {
 TX_JSON_FNAME = process.argv[2]
 console.log({TX_JSON_FNAME})
 
-run_internal(TX_JSON_FNAME)
-
-main()
+main(TX_JSON_FNAME)
