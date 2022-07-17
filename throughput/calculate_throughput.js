@@ -41,6 +41,7 @@ for (var json_index = 0; json_index < json_list.length; json_index += 1) {
     
     if (timestamp < start_timestamp || timestamp > end_timestamp) {
         continue
+        
     }
     const tx_size = json_item.txs.length
     console.log({tx_size})
