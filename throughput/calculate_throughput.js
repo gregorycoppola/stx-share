@@ -94,3 +94,5 @@ console.log({avg_tps})
 const avg_tx = sum_tx / total_tx
 console.log({max_tx})
 console.log({avg_tx})
+
+console.log({sum_tx})
