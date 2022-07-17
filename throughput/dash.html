@@ -14,15 +14,31 @@
         function displayJson(jsonData) {
             var x_list = [];
             var y_list = [];
+            var half_y_list = [];
+            var count = 0;
             for (const tuple of jsonData) {
-                x_list.push(tuple.timestamp);
+                // Note: This comparison with 5000 is to adjust for the fact that two API nodes were alternating.
+                if (count % 10 == 0 && tuple.mempool_size < 3200) {
+                    x_list.push(tuple.timestamp);
                 y_list.push(tuple.mempool_size);
+                half_y_list.push(tuple.mempool_size / 2);
+
+                }
+
+                count += 1;
+
             }
-            const data = [{
+            const data = [
+            {
                 x: x_list,
                 y: y_list,
                 mode: "markers",
-            }];
+            },                {
+                x: x_list,
+                y: half_y_list,
+                mode: "markers",
+            },
+        ];
             var layout = {
                 xaxis: {
                     // range: [45000, 45575],
